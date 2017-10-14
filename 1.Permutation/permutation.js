@@ -1,11 +1,22 @@
-let srcNumber = "10010"
+let srcNumber = "asd"
 console.log("\nUnfortunately the prompt function is not working, so to enter a number to change the program source code:\nSource number: " + srcNumber)
 
-l = srcNumber.length
-resNumber = 0;
+function permutation( num ) {
 
-for (let i = 0; i <= l - 1; i++) {
-	resNumber += srcNumber[l - 1 - i]*2**i;
+	let l = srcNumber.length
+	let res = 0;
+
+	if (l == 0) return undefined;
+	
+	for (let i = 0; i <= l - 1; i++) {
+		if (num[l - 1 - i] == '1' || num[l - 1 - i] == '0'){
+			res += num[l - 1 - i]*2**i
+		} else {
+			return undefined;
+		}
+	}
+
+	return res
 }
 
-console.log("Result number: " + resNumber + "\n")
+console.log("Result number: " + permutation(srcNumber) + "\n")
