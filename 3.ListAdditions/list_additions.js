@@ -1,3 +1,5 @@
+'use strict';
+
 //--------------------------------------------------------------------------------LISTS
 
 function List_node(value){
@@ -5,97 +7,60 @@ function List_node(value){
         this.next_node          = undefined;
 }
 
-function List_iterator(begin){
-        this.current            = begin;
-        this.next = function() {
-                if (this.current == undefined) return undefined;
-                let toReturn = this.current;
-                this.current = this.current.next_node;
-                return toReturn;
-        }
-        this.nextTo = function(index) {
-                while (index) {
-                        this.next();
-                        index --;
-                }
-                return this.current;
-        }
-}
 
-function List(){
-        this.size               = 0;
-        this.begin              = undefined;
-        this.end                = undefined;
-        this.print = function() {
-                let iter = new List_iterator(this.begin)
-                while (iter.current != undefined) {
-                        console.log(" : " + iter.next().value + " : ");
-                }
-        }
-        this.addNode = function(value) {
-                if (this.end === undefined) {
-                        this.begin   = new List_node(value, undefined);
-                        this.end = this.begin;
+function List() {
+        this.size = 0;
+        this.begin = undefined;
+        this.end = undefined;
+        let it = this;
+
+        this.add = function(value) {
+                if (it.begin == undefined) {
+                        it.begin = new List_node(value);
+                        it.end = it.begin;
+                        it.size++;
                 } else {
-                        let buffer         = new List_node(value, undefined);
-                        this.end.next_node = buffer;
-                        this.end           = buffer;
-                }
-                this.size ++;
-                return this.end;
-        }
-	this.insertNode = function(value, position){
-                if (position > this.size || position < 0) {
-                        return null;
-                } else if (position == this.size) {
-                        this.addNode(value);
-                        return this.end;
-                } else if (position == 0) {
-                        let buffer = this.begin;
-                        this.begin = new List_node(value);
-                        this.begin.next_node = buffer;
-                        this.size++;
-                        return this.begin;
-                }
-
-                        else {
-                        let iter = new List_iterator(this.begin);
                         let buffer = new List_node(value);
-                        let prev = iter.nextTo(position - 1);
-                        buffer.next_node = prev.next_node;
-                        prev.next_node = buffer;
-                        this.size++;
+                        it.end.next = buffer;
+                        it.end = buffer;
+                        it.size++;
+                }
+        }.bind(this)
+
+	this.remove = function(index) {
+                if (index < 0 || index >= it.size) {
+                        return undefined;
+                } else if (size == 1){
+                        let buffer = it.begin;
+                        it = new List();
+                        return buffer;
+                } else if (index == 0) {
+                        it.begin = it.begin.next;
+                        it.size --;
+                        return buffer;
+                } else {
+                        let current = it.begin;
+                        while (index > 1) {
+                                current = current.next;
+                                index--;
+                        }
+                        let buffer = current.next;
+                        current.next = buffer.next;
+                        it.size--;
                         return buffer;
                 }
-        }
-        this.popNode = function(position) {
-                if (position < 0 || position >= this.size) {
-                        return null;
-                } else if (position == 0) {
-                        let toReturn = this.begin;
-                        this.size --;
-                        this.begin = this.begin.next_node;
-                        if (this.size == 0) {
-                                this.end = this.begin;
-                        }
-                        return toReturn;
-                } else {
-                        let iter = new List_iterator(this.begin);
-                        let prev = iter.nextTo(position - 1);
-                        let toReturn = prev.next_node;
-                        prev.next_node = prev.next_node.next_node;
-                        this.size --;
-                        return toReturn;
-                }
-        }
+        }.bind(this)
+
         this.find = function(value) {
-                let iter = new List_iterator(this.begin);
-                while(iter.current != undefined) {
-                        if (iter.current.value == value) return iter.current;
-                        iter.next();
+                let current = it.begin
+                while (current != undefined) {
+                        if (current.value == value) {
+                                return current;
+                        }
+                        current = current.next;
                 }
-                return null;
-        }
+                return undefined;
+        }.bind(this)
 }
 
 //--------------------------------------------------------------------------------LISTS
@@ -109,48 +74,57 @@ function numberToList(number) {
         let l = number.length;
 
         for (let i = 0; i <= l - 1; i++) {
-                list.addNode(number[l - 1 - i]);
+                list.add(new Number(number[l - 1 - i]));
         }
         return list;
 }
 
 function addLists(list1, list2) {
-	let iter1 = new List_iterator(list1.begin);
-	let iter2 = new List_iterator(list2.begin);
 	let list3 = new List();
+	let current1 = list1.begin;
+	let current2 = list2.begin;
 	let loan = 0;
 
-	while (iter1.current != undefined && iter2.current != undefined)
+	while (current1 != undefined || current2 != undefined)
 	{
-		if (iter1.current.value + iter2.current.value + loan > 9) {
-			list3.addNode((iter1.current.value + iter2.current.value)%10);
-			loan = 1;
-		} else {
-			list3.addNode(iter1.current.value + iter2.current.value + loan);
-			loan = 0;
-		}
-		iter1.next();
-		iter2.next();
+		if (current1 != undefined && current2 != undefined){
+			if (current1.value + current2.value + loan > 9) {
+				list3.add((current1.value + current2.value + loan)%10);
+				loan = 1;
+			} else {
+				list3.add(current1.value + current2.value + loan);
+				loan = 0;
+			}
+			current1 = current1.next;
+			current2 = current2.next;
+		} else if (current1 != undefined) {
+			if (current1.value + loan > 9) {
+				list3.add((current1.value + loan)%10);
+				loan = 1;
+			} else {
+				list3.add(current1.value + loan);
+				loan = 0;
+			}
+			current1 = current1.next;
+		} else if (current2 != undefined) {
+                        if (current2.value + loan > 9) {
+                                list3.add((current2.value + loan)%10);
+                                loan = 1;
+                        } else {
+                                list3.add(current2.value + loan);
+                                loan = 0;
+                        }
+                        current2 = current2.next;
+                }
 	}
-	while (iter1.current != undefined)
-	{
-		list3.addNode(iter1.current + loan);
-		loan = 0;
-		iter1.next();
-	}
-	while (iter2.current != undefined)
-	{
-		list3.addNode(iter2.current + loan);
-		loan = 0;
-		iter2.next();
-	}
-	if (loan == 1) list3.addNode(loan);
+	if (loan == 1) list3.add(loan);
 
 	return list3;
 }
 
-let list1 = numberToList(1);
-let list2 = numberToList(2);
+let list1 = numberToList(5);
+console.log(list1.begin);
+let list2 = numberToList(19);
+console.log(list2.begin);
 let list3 = addLists(list1, list2);
-
-list3.print();
+console.log(list3.begin);
