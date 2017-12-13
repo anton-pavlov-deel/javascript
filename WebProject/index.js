@@ -12,15 +12,15 @@ app.get('/',(req,res) => res.send('The server is working'));
 app.listen(port, () => console.log(`The server is working on a port ${port}`));
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/companies', {
+mongoose.connect('mongodb://localhost/records', {
 		useMongoClient: true
 });
 
 
 
-// Companies
-app.get('/api/company', function(req, res) {
-	models.company.find((err, data) => {
+// Records
+app.get('/api/record', function(req, res) {
+	models.record.find((err, data) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
@@ -29,157 +29,73 @@ app.get('/api/company', function(req, res) {
 	});
 });
 
-app.post('/api/company', urlencodedParser, function(req, res) {
-	models.company.create({
+app.post('/api/record', urlencodedParser, function(req, res) {
+	console.log("!!! name: "+JSON.stringify(req.body));
+	models.record.create({
 		name: req.body.name,
-		fullName: req.body.fullName,
-		information: {
-			email: req.body.email,
-			phone: req.body.phone
-		}
-	}, function(err, company){
+		data: {
+			X_data: req.body.X_data,
+			Y_data: req.body.Y_data,
+			Z_data: req.body.Z_data
+		},
+		description: req.body.description
+	}, function(err, record){
 		if (err) {
 			res.status(500).send(err);
 		}
-		if (company) {
-			res.status(200).send(company);
+		if (record) {
+			res.status(200).send(record);
 		}
 	});
 });
 
-app.get('/api/company/:companyId', function(req, res) {
-	models.company.findById(
-		new mongoose.Types.ObjectId(req.params.companyId),
-		(err, company) => {
+app.get('/api/record/:recordId', function(req, res) {
+	models.record.findById(
+		new mongoose.Types.ObjectId(req.params.recordId),
+		(err, record) => {
 			if (err) {
 				res.status(500).send(err);
 			}
-			if (company) {
-				res.status(200).send(company);
+			if (record) {
+				res.status(200).send(record);
 			} else {
 				res.status(404).send('No found with that ID');
 			}
 		});
 });
 
-app.put('/api/company/:companyId', urlencodedParser, function(req, res) {
-	models.company.findByIdAndUpdate(
-		new mongoose.Types.ObjectId(req.params.companyId),
+app.put('/api/record/:recordId', urlencodedParser, function(req, res) {
+	models.record.findByIdAndUpdate(
+		new mongoose.Types.ObjectId(req.params.recordId),
 		{
 			name: req.body.name,
-			fullName: req.body.fullName,
-			information: {
-				email: req.body.email,
-				phone: req.body.phone
-			}
-		}, function(err, company){
+			data: {
+				X_data: req.body.X_data,
+				Y_data: req.body.Y_data,
+				Z_data: req.body.Z_data
+			},
+			description: req.body.description
+		}, function(err, record){
 			if (err){
 				res.status(500).send(err);
 			}
-			if (company){
-				res.status(200).send(company);
+			if (record){
+				res.status(200).send(record);
 			}
 		});
 });
 
-app.delete('/api/company/:companyId', function(req, res) {
-	models.company.findByIdAndRemove(
-		new mongoose.Types.ObjectId(req.params.companyId),
-		(err, company) => {
+app.delete('/api/record/:recordId', function(req, res) {
+	models.record.findByIdAndRemove(
+		new mongoose.Types.ObjectId(req.params.recordId),
+		(err, record) => {
 			if (err) {
 				res.status(500).send(err);
 			}
-			if (company) {
+			if (record) {
 				res.status(200).send('success');
 			} else {
 				res.status(404).send('No found with that ID');
 			}
 		});
 });
-
-// Employee
-app.get('/api/employee', function(req, res) {
-	models.employee.find((err, data) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(data);
-		}
-	});
-});
-
-app.post('/api/employee', urlencodedParser, function(req, res) {
-	const companyQuery = models.company.findById(req.body.companyId).exec();
-	companyQuery
-		.then((compObj) => {
-			const newEmployee = new models.employee();
-			newEmployee.company = compObj;
-			newEmployee.name = req.body.name;
-			newEmployee.fullName = req.body.fullName;
-			newEmployee.information = {
-				email: req.body.email,
-				phone: req.body.phone,
-				birthday: new Date(req.body.birthday)
-			};
-			
-			return newEmployee.save();
-		})
-		.then((result) => {
-			res.status(200).send(result);
-		})
-		.catch((err) => res.status(500).send(err));
-});
-
-app.get('/api/employee/:employeeId', function(req, res) {
-	models.employee.findById(
-		new mongoose.Types.ObjectId(req.params.employeeId),
-		(req, employee) => {
-			if (err) {
-				res.status(500).send(err);
-			}
-			if (employee) {
-				res.status(200).send(employee);
-			} else {
-				res.status(404).send('No found with that ID');
-			}
-		});
-});
-
-app.put('/api/employee/:employeeId', urlencodedParser, function(req, res) {
-	models.employee.findByIdAndUpdate(
-		new mongoose.Types.ObjectId(req.oarams.employeeId),
-		{
-			name: req.body.name,
-			fullName: req.body.fullName,
-			information: {
-				email: req.body.email,
-				phone: req.body.phone,
-				birthday: new Date(req.body.birthday)
-			}
-		}, function(err, employee) {
-			if (err) {
-				res.status(500).send(err);
-			}
-			if (employee) {
-				res.status(200).send(employee);
-			} else {
-				res.status(404).send('No found with that ID');
-			}
-		});
-});
-
-app.delete('/api/employee/:employeeId', function(req, res) {
-	models.employee.findByIdAndRemove(
-		new mongoose.Types.ObjectId(req.params.employeeId),
-		(err, employee) => {
-			if (err) {
-				res.status(500).send(err);
-			}
-			if (employee) {
-				res.status(200).send('success');
-			} else {
-				res.status(404).send('No found with that ID');
-			}
-		});
-});
-
