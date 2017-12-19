@@ -30,8 +30,8 @@ app.get('/api/record', function(req, res) {
 });
 
 app.post('/api/record', urlencodedParser, function(req, res) {
-	console.log("!!! name: "+JSON.stringify(req.body));
-	models.record.create({
+	console.log("!!! name: "+JSON.stringify(req.headers));
+	/*models.record.create({
 		name: req.body.name,
 		data: {
 			X_data: req.body.X_data,
@@ -46,7 +46,7 @@ app.post('/api/record', urlencodedParser, function(req, res) {
 		if (record) {
 			res.status(200).send(record);
 		}
-	});
+	});*/
 });
 
 app.get('/api/record/:recordId', function(req, res) {
