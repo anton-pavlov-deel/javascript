@@ -1,0 +1,58 @@
+#SearchDiv {
+	position: absolute;
+	width: 30%;
+	height: 90%;
+	background-color: #DDDDDD;
+	border: 2px solid black;
+	left: 1%;
+}
+
+#ViewDiv {
+	position: absolute;
+	height: 90%;
+	left: 32%;
+	right: 32%;
+	border: 2px solid black;
+}
+
+#InputDiv {
+	position: absolute;
+	width: 30%;
+	height: 90%;
+	background-color: #DDDDDD;
+	right: 1%;
+	border: 2px solid black;
+}
+
+#InputArea {
+	position: relative;
+	min-width: 98.5%;
+	min-height: 95%;
+	max-width: 98.5%;
+	max-height: 95%;
+}
+
+#TranslateButton {
+	position: relative;
+	top: -1%;
+	width: 100%;
+	height: 4.2%;
+}
+
+#SearchText {
+	position: relative;
+	top: 5%;
+	left: 30%;
+}
+
+#SearchButton {
+	position: relative;
+	top: 10%;
+	left: -13%;
+}
+
+#RefreshButton {
+	position: relative;
+	top: 10%;
+	left: -0.5%
+}

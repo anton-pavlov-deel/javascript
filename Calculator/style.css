@@ -1,0 +1,29 @@
+#MainDiv {
+	border: 2px solid black;
+	padding: 150px;
+	width: 350px;
+	background-color: #dddd99;
+}
+
+#CalcBody {
+	padding: 10px;
+	border: 3px solid gray;
+	background-color: #dddddd;
+}
+
+#CalcDisplay {
+	text-align: right;
+	width: 130px;
+	height: 30px;
+	background-color: #ddeedd;
+}
+
+.CalcButton {
+	width: 30px;
+	height: 15px;
+	border: 1px solid gray;
+	padding: 5px;
+	text-align: center;
+	cursor: pointer;
+	background-color: #deadbeaf;
+}
